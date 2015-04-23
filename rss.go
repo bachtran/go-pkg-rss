@@ -157,6 +157,11 @@ func (this *Feed) readRss2(doc *xmlx.Document) (err error) {
 				i.Author.Name = n.GetValue()
 			}
 
+			if n = item.SelectNode(ns, "thumbnail"); n != nil {
+				// Get thumbnail url
+				i.ThumbnailSrc = n.As(ns, "url")
+			}
+
 			i.Comments = item.S(ns, "comments")
 
 			guid := item.S(ns, "guid")
