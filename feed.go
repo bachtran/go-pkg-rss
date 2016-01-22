@@ -3,7 +3,7 @@
  Dependencies: go-pkg-xmlx (http://github.com/jteeuwen/go-pkg-xmlx)
 
  This package allows us to fetch Rss and Atom feeds from the internet.
- They are parsed into an object tree which is a hyvrid of both the RSS and Atom
+ They are parsed into an object tree which is a hybrid of both the RSS and Atom
  standards.
 
  Supported feeds are:
@@ -104,6 +104,9 @@ type Feed struct {
 	// On our next fetch *ONLY* (this will get reset to false afterwards),
 	// ignore all cache settings and update frequency hints, and always fetch.
 	ignoreCacheOnce bool
+
+	// Custom user agent
+	userAgent string
 }
 
 // New is a helper function to stay semi-compatible with
@@ -170,6 +173,10 @@ func (this *Feed) FetchClient(uri string, client *http.Client, charset xmlx.Char
 	this.lastupdate = time.Now().UTC()
 	this.Url = uri
 	doc := xmlx.New()
+
+	if len(this.userAgent) > 1 {
+		doc.SetUserAgent(this.userAgent)
+	}
 
 	if err = doc.LoadUriClient(uri, client, charset); err != nil {
 		return
@@ -357,4 +364,8 @@ func (this *Feed) GetVersionInfo(doc *xmlx.Document) (ftype string, fversion [2]
 	ftype = "unknown"
 	fversion = [2]int{0, 0}
 	return
+}
+
+func (this *Feed) SetUserAgent(s string) {
+	this.userAgent = s
 }
